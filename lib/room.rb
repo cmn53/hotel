@@ -17,10 +17,20 @@ module Hotel
 
     def add_reservation(reservation)
       if reservation.class != Reservation
-        raise ArgumentError.new("Input is not an instance of Reservation")
+        raise ArgumentError.new("Input must be an instance of Reservation")
       end
 
       @reservations << reservation
+    end
+
+    def is_available?(date)
+      @reservations.each do |res|
+        date_range = (res.start_date...res.end_date).to_a
+        if date_range.include?(date)
+          return false
+        end
+      end
+      return true
     end
   end
 end

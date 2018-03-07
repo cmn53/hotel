@@ -53,4 +53,38 @@ describe 'Room class' do
     end
 
   end
+
+  describe 'is_available? method' do
+    before do
+      @room = Hotel::Room.new(1)
+      reservation_data = {
+        id: 100,
+        start_date: Date.parse("Dec 31, 1999"),
+        end_date: Date.parse("Jan 2, 2000"),
+        room: @room
+      }
+      @reservation = Hotel::Reservation.new(reservation_data)
+      @room.add_reservation(@reservation)
+    end
+
+    it 'returns true if the given date is before the reservation' do
+      date = Date.parse("Dec 30, 1999")
+      @room.is_available?(date).must_equal true
+    end
+
+    it 'returns true if the given date is after the reservation' do
+      date = Date.parse("Jan 3, 2000")
+      @room.is_available?(date).must_equal true
+    end
+
+    it 'returns true if the given date is the check-out date of the reservation' do
+      date = Date.parse("Jan 2, 2000")
+      @room.is_available?(date).must_equal true
+    end
+
+    it 'returns false if the given date overlaps the reservation date range' do
+      date = Date.parse("Jan 1, 2000")
+      @room.is_available?(date).must_equal false
+    end
+  end
 end

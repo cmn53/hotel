@@ -12,12 +12,12 @@ module Hotel
     end
 
     def load_rooms
-      @rooms = []
+      rooms = []
       (1..20).times do |num|
-        @rooms << Room.new(num)
+        rooms << Room.new(num)
       end
 
-      return @rooms
+      return rooms
     end
 
     def reserve_room(start_date, end_date) # Dates must be entered as strings
@@ -47,30 +47,45 @@ module Hotel
       return reservation_id
     end
 
-    def find_available_rooms(start_date, end_date)
-      available_rooms = []
+    def find_reservations(date)
+      reservations_by_date = []
 
-      reservation_range = (Date.parse(start_date)..Date.parse(end_date)-1).to_a
-
-      @rooms.each do |room|
-
-        conflicts = []
-
-        room.reservations.each do |reservation|
-          booked_range = (start_date..end_date - 1).to_a
-          intersection = reservation_range & booked_range
-          unless intersection.empty?
-            conflicts << intersection
-          end
-        end
-
-        if conflicts.empty?
-          available_rooms << room
+      @reservations.each do |res|
+        reservation_dates = (res.start_date...res.end_date).to_a
+        if reservation_dates.include?(date)
+          reservations_by_date << res
         end
       end
 
-      return available_rooms
+      return reservations_by_date
     end
+
+
+    # def find_available_rooms(start_date, end_date)
+    #   available_rooms = []
+    #
+    #   reservation_range = (Date.parse(start_date)..Date.parse(end_date)-1).to_a
+    #
+    #   @rooms.each do |room|
+    #
+    #     conflicts = false
+    #
+    #     room.reservations.each do |reservation|
+    #       booked_range = (start_date..end_date - 1).to_a
+    #       intersection = reservation_range & booked_range
+    #       unless intersection.empty?
+    #         conflicts = true
+    #         break
+    #       end
+    #     end
+    #
+    #     if conflicts == false
+    #       available_rooms << room
+    #     end
+    #   end
+    #
+    #   return available_rooms
+    # end
 
   end
 end
