@@ -25,15 +25,14 @@ module Hotel
         id: next_reservation_id,
         start_date: Date.parse(start_date),
         end_date: Date.parse(end_date),
-        room: find_available_rooms(start_date, end_date).first
+        room: @rooms.sample # change later to find available rooms
       }
 
       new_reservation = Reservation.new(reservation_data)
 
-      # TODO: Add reservation to assigned room
       new_reservation.room.add_reservation(new_reservation)
 
-      return reservation
+      return new_reservation
 
     end
 
