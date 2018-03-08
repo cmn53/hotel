@@ -57,38 +57,102 @@ describe 'Room class' do
   describe 'is_available? method' do
     before do
       @room = Hotel::Room.new(1)
-      @date_range = Hotel::DateRange.new("Dec 31, 1999", "Jan 2, 2000").range
+      @date_range = Hotel::DateRange.new('2018-03-09', '2018-03-16').range
+    end
+
+    it 'returns true if the room has no reservations' do
+      @room.is_available?(@date_range).must_equal true
+    end
+
+    it 'returns true if the given date range doesnt overlap a reservation' do
+      reservation_date_range = Hotel::DateRange.new('2018-04-09', '2018-04-16').range
       reservation_data = {
         id: 100,
-        date_range: @date_range,
+        date_range: reservation_date_range,
         room: @room
       }
-      @reservation = Hotel::Reservation.new(reservation_data)
-      @room.add_reservation(@reservation)
+      reservation = Hotel::Reservation.new(reservation_data)
+      @room.add_reservation(reservation)
+
+      @room.is_available?(@date_range).must_equal true
     end
 
-    it 'returns true if the given date is before the reservation' do
-      date = Date.parse("Dec 30, 1999")
-      @room.is_available?(date).must_equal true
+    it 'returns true if the given date range ends on the check-in date of a reservation' do
+      reservation_date_range = Hotel::DateRange.new('2018-03-16', '2018-03-18').range
+      reservation_data = {
+        id: 100,
+        date_range: reservation_date_range,
+        room: @room
+      }
+      reservation = Hotel::Reservation.new(reservation_data)
+      @room.add_reservation(reservation)
+
+      @room.is_available?(@date_range).must_equal true
     end
 
-    it 'returns true if the given date is after the reservation' do
-      date = Date.parse("Jan 3, 2000")
-      @room.is_available?(date).must_equal true
+    it 'returns true if the given date range begins on the check-out date of a reservation' do
+      reservation_date_range = Hotel::DateRange.new('2018-03-07', '2018-03-09').range
+      reservation_data = {
+        id: 100,
+        date_range: reservation_date_range,
+        room: @room
+      }
+      reservation = Hotel::Reservation.new(reservation_data)
+      @room.add_reservation(reservation)
+
+      @room.is_available?(@date_range).must_equal true
     end
 
-    it 'returns true if the given date is the check-out date of the reservation' do
-      date = Date.parse("Jan 2, 2000")
-      @room.is_available?(date).must_equal true
+    it 'returns false if the given date range overlaps the beginning of a reservation' do
+      reservation_date_range = Hotel::DateRange.new('2018-03-15', '2018-03-17').range
+      reservation_data = {
+        id: 100,
+        date_range: reservation_date_range,
+        room: @room
+      }
+      reservation = Hotel::Reservation.new(reservation_data)
+      @room.add_reservation(reservation)
+
+      @room.is_available?(@date_range).must_equal false
     end
 
-    it 'returns false if the given date overlaps the reservation date range' do
-      date = Date.parse("Jan 1, 2000")
-      @room.is_available?(date).must_equal false
+    it 'returns false if the given date range overlaps the end of a reservation' do
+      reservation_date_range = Hotel::DateRange.new('2018-03-07', '2018-03-10').range
+      reservation_data = {
+        id: 100,
+        date_range: reservation_date_range,
+        room: @room
+      }
+      reservation = Hotel::Reservation.new(reservation_data)
+      @room.add_reservation(reservation)
+
+      @room.is_available?(@date_range).must_equal false
     end
 
-    it 'throws an error if the input is not a date' do
-      proc { @room.is_available?(1) }.must_raise ArgumentError
+    it 'returns false if the given date range is completely contained by a reservation' do
+      reservation_date_range = Hotel::DateRange.new('2018-03-07', '2018-03-18').range
+      reservation_data = {
+        id: 100,
+        date_range: reservation_date_range,
+        room: @room
+      }
+      reservation = Hotel::Reservation.new(reservation_data)
+      @room.add_reservation(reservation)
+
+      @room.is_available?(@date_range).must_equal false
+    end
+
+    it 'returns false if the given date range contains a reservation' do
+      reservation_date_range = Hotel::DateRange.new('2018-03-11', '2018-03-13').range
+      reservation_data = {
+        id: 100,
+        date_range: reservation_date_range,
+        room: @room
+      }
+      reservation = Hotel::Reservation.new(reservation_data)
+      @room.add_reservation(reservation)
+
+      @room.is_available?(@date_range).must_equal false
     end
   end
 end

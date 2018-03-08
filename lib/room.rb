@@ -23,13 +23,10 @@ module Hotel
       @reservations << reservation
     end
 
-    def is_available?(date)
-      if date.class != Date
-        raise ArgumentError.new("Input must be an instance of Date class")
-      end
-
+    def is_available?(date_range)
       @reservations.each do |reservation|
-        return false if reservation.date_range.include?(date)
+        intersection = reservation.date_range & date_range
+        return false unless intersection.empty?
       end
       return true
     end
