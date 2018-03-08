@@ -114,24 +114,27 @@ describe 'Admin class' do
     end
   end
 
-  # describe 'find_available_rooms method' do
-  #   before do
-  #     @hotel = Hotel::Admin.new
-  #     @hotel.reserve_room("May 6, 1982", "May 10, 1982")
-  #     @hotel.reserve_room("May 5, 1982", "May 8, 1982")
-  #   end
-  #
-  #   it 'returns an array of rooms' do
-  #     available_rooms = @hotel.find_reservations(Date.parse("May 4, 1982"),Date.parse("May 6, 1982"))
-  #     available_rooms.must_be_kind_of Array
-  #     available_rooms.each do |room|
-  #       room.must_be_instance of Hotel::Room
-  #     end
-  #   end
-  #
-  #   it 'accurately accounts for the number of available rooms' do
-  #     available_rooms = @hotel.find_reservations(Date.parse("May 4, 1982"),Date.parse("May 6, 1982"))
-  #     available_rooms.length.must_equal 19
-  #   end
-  # end
+  describe 'find_available_rooms method' do
+    before do
+      @hotel = Hotel::Admin.new
+      date_range_1 = Hotel::DateRange.new("May 6, 1982", "May 10, 1982").range
+      date_range_2 = Hotel::DateRange.new("May 5, 1982", "May 8, 1982").range
+      @date_range_3 = Hotel::DateRange.new("May 6, 1982", "May 8, 1982").range
+      @hotel.reserve_room(date_range_1)
+      @hotel.reserve_room(date_range_2)
+    end
+
+    it 'returns an array of rooms' do
+      available_rooms = @hotel.find_available_rooms(@date_range_3)
+      available_rooms.must_be_kind_of Array
+      available_rooms.each do |room|
+        room.must_be_instance_of Hotel::Room
+      end
+    end
+
+    it 'accurately accounts for the number of available rooms' do
+      available_rooms = @hotel.find_available_rooms(@date_range_3)
+      available_rooms.length.must_equal 18
+    end
+  end
 end

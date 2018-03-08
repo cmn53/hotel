@@ -24,7 +24,7 @@ module Hotel
       reservation_data = {
         id: next_reservation_id,
         date_range: date_range,
-        room: @rooms.sample # change later to find available rooms
+        room: find_available_rooms(date_range).sample # change later to find available rooms
       }
 
       new_reservation = Reservation.new(reservation_data)
@@ -46,43 +46,20 @@ module Hotel
     end
 
     def find_reservations(date)
-      reservations_by_date = []
-
-      @reservations.each do |reservation|
-        if reservation.date_range.include?(date)
-          reservations_by_date << reservation
-        end
+      reservations_by_date = @reservations.select do |reservation|
+        reservation.date_range.include?(date)
       end
 
       return reservations_by_date
     end
 
+    def find_available_rooms(date_range)
+      available_rooms = @rooms.select do |room|
+        room.is_available?(date_range)
+      end
 
-    # def find_available_rooms(start_date, end_date)
-    #   available_rooms = []
-    #
-    #   reservation_range = (Date.parse(start_date)..Date.parse(end_date)-1).to_a
-    #
-    #   @rooms.each do |room|
-    #
-    #     conflicts = false
-    #
-    #     room.reservations.each do |reservation|
-    #       booked_range = (start_date..end_date - 1).to_a
-    #       intersection = reservation_range & booked_range
-    #       unless intersection.empty?
-    #         conflicts = true
-    #         break
-    #       end
-    #     end
-    #
-    #     if conflicts == false
-    #       available_rooms << room
-    #     end
-    #   end
-    #
-    #   return available_rooms
-    # end
+      return available_rooms
+    end
 
   end
 end
