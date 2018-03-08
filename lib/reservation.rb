@@ -12,11 +12,9 @@ module Hotel
     end
 
     def projected_cost
-      # exclusive range does not include end date,
-      # count returns an Integer rather than the Rational returned by subtraction of two dates
       nights = date_range.count
       projected_cost = nights * COST_PER_NIGHT
-#
+
       return projected_cost
     end
   end
