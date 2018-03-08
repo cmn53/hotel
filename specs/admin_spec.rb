@@ -60,6 +60,14 @@ describe 'Admin class' do
     it 'adds the reservation to the hotels list of reservations' do
       @hotel.reservations.must_include @reservation
     end
+
+    it 'throws an error if there are no available rooms' do
+      19.times do
+        @hotel.reserve_room(@date_range)
+      end
+
+      proc { @hotel.reserve_room(@date_range) }.must_raise StandardError
+    end
   end
 
   describe 'next_reservation_id helper method' do
@@ -135,6 +143,15 @@ describe 'Admin class' do
     it 'accurately accounts for the number of available rooms' do
       available_rooms = @hotel.find_available_rooms(@date_range_3)
       available_rooms.length.must_equal 18
+    end
+
+    it 'returns an empty array if there are no available rooms' do
+      date_range = Hotel::DateRange.new("March 17, 2018", "March 18, 2018").range
+      20.times do
+        @hotel.reserve_room(date_range)
+      end
+
+      @hotel.find_available_rooms(date_range).must_be_empty
     end
   end
 end

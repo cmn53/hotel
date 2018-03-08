@@ -21,10 +21,14 @@ module Hotel
     end
 
     def reserve_room(date_range)
+      if find_available_rooms(date_range).empty?
+        raise StandardError.new("There are no available rooms for that date range.")
+      end
+
       reservation_data = {
         id: next_reservation_id,
         date_range: date_range,
-        room: find_available_rooms(date_range).sample # change later to find available rooms
+        room: find_available_rooms(date_range).sample
       }
 
       new_reservation = Reservation.new(reservation_data)
