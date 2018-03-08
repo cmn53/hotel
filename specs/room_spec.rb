@@ -86,5 +86,9 @@ describe 'Room class' do
       date = Date.parse("Jan 1, 2000")
       @room.is_available?(date).must_equal false
     end
+
+    it 'throws an error if the input is not a date' do
+      proc { @room.is_available?(1) }.must_raise ArgumentError
+    end
   end
 end

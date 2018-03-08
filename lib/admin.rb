@@ -1,4 +1,4 @@
-require 'date'
+# require 'date'
 require_relative 'room'
 require_relative 'reservation'
 
@@ -13,7 +13,7 @@ module Hotel
 
     def load_rooms
       rooms = []
-      (1..20).times do |num|
+      (1..20).each do |num|
         rooms << Room.new(num)
       end
 
