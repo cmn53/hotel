@@ -1,4 +1,4 @@
-# require 'date'
+require_relative 'daterange'
 require_relative 'room'
 require_relative 'reservation'
 
@@ -20,11 +20,10 @@ module Hotel
       return rooms
     end
 
-    def reserve_room(start_date, end_date) # Dates must be entered as strings
+    def reserve_room(date_range)
       reservation_data = {
         id: next_reservation_id,
-        start_date: Date.parse(start_date),
-        end_date: Date.parse(end_date),
+        date_range: date_range,
         room: @rooms.sample # change later to find available rooms
       }
 
@@ -49,10 +48,9 @@ module Hotel
     def find_reservations(date)
       reservations_by_date = []
 
-      @reservations.each do |res|
-        reservation_dates = (res.start_date...res.end_date).to_a
-        if reservation_dates.include?(date)
-          reservations_by_date << res
+      @reservations.each do |reservation|
+        if reservation.date_range.include?(date)
+          reservations_by_date << reservation
         end
       end
 

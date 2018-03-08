@@ -29,13 +29,14 @@ describe 'Admin class' do
   describe 'reserve_room method' do
     before do
       @hotel = Hotel::Admin.new
-      @reservation = @hotel.reserve_room("Dec 31, 1999", "Jan 2, 2000")
+      @date_range = Hotel::DateRange.new("Dec 31, 1999", "Jan 2, 2000").range
+      @reservation = @hotel.reserve_room(@date_range)
     end
 
     it 'creates a new reservation' do
       @reservation.must_be_instance_of Hotel::Reservation
 
-      [:id, :start_date, :end_date, :room].each do |prop|
+      [:id, :date_range, :room].each do |prop|
         @reservation.must_respond_to prop
       end
     end
@@ -43,10 +44,10 @@ describe 'Admin class' do
     it 'accurately loads reservation data' do
       @reservation.id.must_be_kind_of Integer
       @reservation.id.must_equal 1
-      @reservation.start_date.must_be_kind_of Date
-      @reservation.start_date.must_equal Date.new(1999,12,31)
-      @reservation.end_date.must_be_kind_of Date
-      @reservation.end_date.must_equal Date.new(2000,1,2)
+      @reservation.date_range.must_be_kind_of Array
+      @reservation.date_range.each do |date|
+        date.must_be_kind_of Date
+      end
       @reservation.room.must_be_instance_of Hotel::Room
     end
 
@@ -69,9 +70,12 @@ describe 'Admin class' do
 
     it 'creates a unique reservation id' do
       hotel = Hotel::Admin.new
-      hotel.reserve_room("May 6, 1982", "May 10, 1982")
-      hotel.reserve_room("April 30, 1982", "May 1, 1982")
-      hotel.reserve_room("May 4, 1982", "May 5, 1982")
+      range_1 = Hotel::DateRange.new("May 6, 1982", "May 10, 1982").range
+      range_2 = Hotel::DateRange.new("April 30, 1982", "May 1, 1982").range
+      range_3 = Hotel::DateRange.new("May 5, 1982", "May 8, 1982").range
+      hotel.reserve_room(range_1)
+      hotel.reserve_room(range_2)
+      hotel.reserve_room(range_3)
 
       res_ids = hotel.reservations.map { |reservation| reservation.id }
       res_ids.uniq.length.must_equal 3
@@ -81,9 +85,12 @@ describe 'Admin class' do
   describe 'find_reservations method' do
     before do
       @hotel = Hotel::Admin.new
-      @reservation_1 = @hotel.reserve_room("May 6, 1982", "May 10, 1982")
-      @reservation_2 = @hotel.reserve_room("April 30, 1982", "May 1, 1982")
-      @reservation_3 = @hotel.reserve_room("May 5, 1982", "May 8, 1982")
+      range_1 = Hotel::DateRange.new("May 6, 1982", "May 10, 1982").range
+      range_2 = Hotel::DateRange.new("April 30, 1982", "May 1, 1982").range
+      range_3 = Hotel::DateRange.new("May 5, 1982", "May 8, 1982").range
+      @reservation_1 = @hotel.reserve_room(range_1)
+      @reservation_2 = @hotel.reserve_room(range_2)
+      @reservation_3 = @hotel.reserve_room(range_3)
     end
 
     it 'returns an array of reservations' do
@@ -106,4 +113,25 @@ describe 'Admin class' do
       @hotel.find_reservations(Date.parse("May 2, 1982")).must_equal []
     end
   end
+
+  # describe 'find_available_rooms method' do
+  #   before do
+  #     @hotel = Hotel::Admin.new
+  #     @hotel.reserve_room("May 6, 1982", "May 10, 1982")
+  #     @hotel.reserve_room("May 5, 1982", "May 8, 1982")
+  #   end
+  #
+  #   it 'returns an array of rooms' do
+  #     available_rooms = @hotel.find_reservations(Date.parse("May 4, 1982"),Date.parse("May 6, 1982"))
+  #     available_rooms.must_be_kind_of Array
+  #     available_rooms.each do |room|
+  #       room.must_be_instance of Hotel::Room
+  #     end
+  #   end
+  #
+  #   it 'accurately accounts for the number of available rooms' do
+  #     available_rooms = @hotel.find_reservations(Date.parse("May 4, 1982"),Date.parse("May 6, 1982"))
+  #     available_rooms.length.must_equal 19
+  #   end
+  # end
 end

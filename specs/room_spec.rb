@@ -31,10 +31,10 @@ describe 'Room class' do
   describe 'add_reservation method' do
     before do
       @room = Hotel::Room.new(1)
+      @date_range = Hotel::DateRange.new("Dec 31, 1999", "Jan 2, 2000").range
       reservation_data = {
         id: 100,
-        start_date: Date.parse("Dec 31, 1999"),
-        end_date: Date.parse("Jan 2, 2000"),
+        date_range: @date_range,
         room: @room
       }
       @reservation = Hotel::Reservation.new(reservation_data)
@@ -57,10 +57,10 @@ describe 'Room class' do
   describe 'is_available? method' do
     before do
       @room = Hotel::Room.new(1)
+      @date_range = Hotel::DateRange.new("Dec 31, 1999", "Jan 2, 2000").range
       reservation_data = {
         id: 100,
-        start_date: Date.parse("Dec 31, 1999"),
-        end_date: Date.parse("Jan 2, 2000"),
+        date_range: @date_range,
         room: @room
       }
       @reservation = Hotel::Reservation.new(reservation_data)

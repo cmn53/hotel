@@ -28,9 +28,8 @@ module Hotel
         raise ArgumentError.new("Input must be an instance of Date class")
       end
 
-      @reservations.each do |res|
-        reservation_range = (res.start_date...res.end_date).to_a
-        return false if reservation_range.include?(date)
+      @reservations.each do |reservation|
+        return false if reservation.date_range.include?(date)
       end
       return true
     end
