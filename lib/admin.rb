@@ -29,7 +29,7 @@ module Hotel
       }
 
       new_reservation = Reservation.new(reservation_data)
-
+      @reservations << new_reservation
       new_reservation.room.add_reservation(new_reservation)
 
       return new_reservation

@@ -56,5 +56,54 @@ describe 'Admin class' do
       assigned_room.reservations.must_include @reservation
     end
 
+    it 'adds the reservation to the hotels list of reservations' do
+      @hotel.reservations.must_include @reservation
+    end
+  end
+
+  describe 'next_reservation_id helper method' do
+    it 'assigns an id of 1 if there are no existing reservations' do
+      hotel = Hotel::Admin.new
+      hotel.next_reservation_id.must_equal 1
+    end
+
+    it 'creates a unique reservation id' do
+      hotel = Hotel::Admin.new
+      hotel.reserve_room("May 6, 1982", "May 10, 1982")
+      hotel.reserve_room("April 30, 1982", "May 1, 1982")
+      hotel.reserve_room("May 4, 1982", "May 5, 1982")
+
+      res_ids = hotel.reservations.map { |reservation| reservation.id }
+      res_ids.uniq.length.must_equal 3
+    end
+  end
+
+  describe 'find_reservations method' do
+    before do
+      @hotel = Hotel::Admin.new
+      @reservation_1 = @hotel.reserve_room("May 6, 1982", "May 10, 1982")
+      @reservation_2 = @hotel.reserve_room("April 30, 1982", "May 1, 1982")
+      @reservation_3 = @hotel.reserve_room("May 5, 1982", "May 8, 1982")
+    end
+
+    it 'returns an array of reservations' do
+      reservations = @hotel.find_reservations(Date.parse("May 6, 1982"))
+      reservations.must_be_kind_of Array
+      reservations.each do |reservation|
+        reservation.must_be_instance_of Hotel::Reservation
+      end
+    end
+
+    it 'accurately accounts for the number of reservations that overlap the given date' do
+      reservations = @hotel.find_reservations(Date.parse("May 6, 1982"))
+      reservations.length.must_equal 2
+      reservations.must_include @reservation_1
+      reservations.must_include @reservation_3
+      reservations.wont_include @reservation_2
+    end
+
+    it 'returns an empty array if the date does not overlap any reservations' do
+      @hotel.find_reservations(Date.parse("May 2, 1982")).must_equal []
+    end
   end
 end
