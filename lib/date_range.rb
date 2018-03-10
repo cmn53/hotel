@@ -1,9 +1,9 @@
-require 'date'
+#require 'date'
 
 module Hotel
   class DateRange
 
-    attr_reader :start_date, :end_date, :date_range
+    attr_reader :start_date, :end_date
 
     def initialize(start_date, end_date)
       @start_date = Date.parse(start_date)
@@ -16,7 +16,7 @@ module Hotel
       end
 
       if @end_date <= @start_date
-        raise StandardError.new("End date must be at least one day later than starting date.")
+        raise StandardError.new("End date must be at least one day later than start date.")
       end
     end
 
