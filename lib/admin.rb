@@ -1,4 +1,3 @@
-require_relative 'block_reservation'
 require_relative 'date_range'
 require_relative 'room'
 require_relative 'reservation'
