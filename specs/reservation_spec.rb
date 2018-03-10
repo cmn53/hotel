@@ -26,7 +26,7 @@ describe 'Reservation class' do
     end
   end
 
-  describe 'projected_cost method' do
+  describe 'cost method' do
 
     it 'calculates the projected cost of the reservation' do
       room = Hotel::Room.new(1)
@@ -38,8 +38,23 @@ describe 'Reservation class' do
       }
       reservation = Hotel::Reservation.new(reservation_data)
 
-      reservation.projected_cost.must_be_kind_of Integer
-      reservation.projected_cost.must_equal 600
+      reservation.cost.must_be_kind_of Float
+      reservation.cost.must_equal 600.0
+    end
+
+    it 'calculates the projected cost of the reservation if it is part of a block' do
+      room = Hotel::Room.new(1)
+      date_range = Hotel::DateRange.new('2018-03-09', '2018-03-12').range
+      reservation_data = {
+        id: 100,
+        date_range: date_range,
+        room: room,
+        block_id: 1
+      }
+      reservation = Hotel::Reservation.new(reservation_data)
+
+      reservation.cost.must_be_kind_of Float
+      reservation.cost.must_equal 450.0
     end
   end
 end
