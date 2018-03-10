@@ -136,22 +136,46 @@ describe 'Admin class' do
       hotel.next_reservation_id.must_equal 1
     end
 
-    it 'creates a unique reservation id' do
+    it 'assigns an id one higher than the highest existing reservation id' do
       hotel = Hotel::Admin.new
       range_1 = Hotel::DateRange.new("May 6, 1982", "May 10, 1982")
       range_2 = Hotel::DateRange.new("April 30, 1982", "May 1, 1982")
-      range_3 = Hotel::DateRange.new("May 5, 1982", "May 8, 1982")
       hotel.reserve_room(range_1)
       hotel.reserve_room(range_2)
-      hotel.reserve_room(range_3)
 
-      res_ids = hotel.reservations.map { |reservation| reservation.id }
-      res_ids.uniq.length.must_equal 3
+      hotel.next_reservation_id.must_equal 3
+    end
+
+    describe 'next_block_id helper method' do
+      before do
+        @hotel = Hotel::Admin.new
+        @date_range = Hotel::DateRange.new("May 6, 1982", "May 10, 1982")
+      end
+
+      it 'assigns an id of 1 if there are no existing block reservations' do
+        @hotel.next_block_id.must_equal 1
+      end
+
+      it 'assigns an id one higher than the highest existing block id' do
+        reservation_data_1 = {
+          id: 100,
+          date_range: @date_range,
+          room: 15,
+          block_id: 1,
+          block_status: :blocked
+        }
+        reservation_data_2 = {
+          id: 200,
+          date_range: @date_range,
+          room: 16,
+          block_id: 4,
+          block_status: :blocked
+        }
+        reservation_1 = Hotel::Reservation.new(reservation_data_1)
+        reservation_2 = Hotel::Reservation.new(reservation_data_2)
+        @hotel.reservations.push(reservation_1, reservation_2)
+        @hotel.next_block_id.must_equal 5
+      end
     end
   end
-
-
-
-
-
 end

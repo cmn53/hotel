@@ -62,21 +62,36 @@ module Hotel
       return @reservations.map { |res| res.id }.max + 1
     end
 
-    def create_block(num_rooms, date_range, block_id)
-      if find_available_rooms(date_range).empty?
-        raise StandardError.new("There are no available rooms for that date range.")
+    def next_block_id
+      if @reservations.select { |res| res.block_id != nil }.empty?
+        return 1
+      else
+        max_block_id = @reservations.map { |res| res.block_id }.max
+        return max_block_id + 1
       end
+    end
+
+    def create_block(num_rooms, date_range, block_id)
+      if num_rooms > 5
+        raise ArgumentError.new("A block can contain a maximum of 5 rooms.")
+      end
+
+      if find_available_rooms(date_range) < num_rooms
+        raise StandardError.new("There are not enough available rooms to block for those dates.")
+      end
+
+      block_id = next_block_id
 
       num_rooms.times do
         reservation_data = {
           id: next_reservation_id,
           date_range: date_range,
           room: find_available_rooms(date_range).sample,
-          block_id: block_id
+          block_id: block_id,
+          block_status: :blocked
         }
         new_block_reservation = Reservation.new(reservation_data)
         @reservations << new_block_reservation
-        #new_block_reservation.room.add_reservation(new_block_reservation)
       end
     end
 
