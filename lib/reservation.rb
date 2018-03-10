@@ -1,7 +1,7 @@
 module Hotel
   class Reservation
 
-    attr_reader :id, :date_range, :room, :block_id
+    attr_reader :id, :date_range, :room, :block_id, :block_status
 
     COST_PER_NIGHT = 200.0
     BLOCK_DISCOUNT = 0.25
@@ -15,7 +15,7 @@ module Hotel
     end
 
     def cost
-      nights = date_range.count
+      nights = @date_range.range.count
       cost = nights * COST_PER_NIGHT
       cost *= (1 - BLOCK_DISCOUNT) if @block_id != nil
 

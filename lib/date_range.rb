@@ -1,5 +1,3 @@
-#require 'date'
-
 module Hotel
   class DateRange
 
