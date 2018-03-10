@@ -29,15 +29,14 @@ module Hotel
     end
 
     def find_available_rooms(date_range)
-      available_rooms = []
-
       conflicts = @reservations.select do |reservation|
         reservation.overlap?(date_range)
       end
 
       unavailable_rooms = conflicts.map { |res| res.room }
-
       available_rooms = @rooms - unavailable_rooms
+
+      return available_rooms
     end
 
     def reserve_room(date_range)
@@ -71,12 +70,12 @@ module Hotel
       end
     end
 
-    def create_block(num_rooms, date_range, block_id)
+    def create_block(num_rooms, date_range)
       if num_rooms > 5
         raise ArgumentError.new("A block can contain a maximum of 5 rooms.")
       end
 
-      if find_available_rooms(date_range) < num_rooms
+      if find_available_rooms(date_range).length < num_rooms
         raise StandardError.new("There are not enough available rooms to block for those dates.")
       end
 
@@ -99,6 +98,9 @@ module Hotel
       available_block_rooms = @reservations.select do |res|
         res.block_id == block_id && res.block_status == :blocked
       end
+
+      return available_block_rooms
     end
+
   end
 end

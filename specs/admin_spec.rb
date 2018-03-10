@@ -128,6 +128,15 @@ describe 'Admin class' do
 
       proc { @hotel.reserve_room(@date_range) }.must_raise StandardError
     end
+
+    # it 'throws an error if all rooms have been blocked' do
+    #   3.times do
+    #     @hotel.create_block(5, @date_range)
+    #   end
+    #   @hotel.create_block(4, @date_range)
+    #
+    #   proc { @hotel.reserve_room(@date_range) }.must_raise StandardError
+    # end
   end
 
   describe 'next_reservation_id helper method' do
@@ -175,6 +184,50 @@ describe 'Admin class' do
         reservation_2 = Hotel::Reservation.new(reservation_data_2)
         @hotel.reservations.push(reservation_1, reservation_2)
         @hotel.next_block_id.must_equal 5
+      end
+    end
+
+    describe 'create_block method' do
+      before do
+        @hotel = Hotel::Admin.new
+        @date_range = Hotel::DateRange.new("May 6, 1982", "May 10, 1982")
+      end
+
+      it 'throws an error if the user tries to block more than 5 rooms' do
+        proc { @hotel.create_block(6, @date_range) }.must_raise ArgumentError
+      end
+
+      it 'adds the block reservations to the hotels reservations' do
+        @hotel.create_block(3, @date_range)
+        @hotel.reservations.length.must_equal 3
+      end
+
+      it 'creates reservations with distinct reservation ids and rooms' do
+        @hotel.create_block(3, @date_range)
+        @hotel.reservations.map { |res| res.id }.uniq.length.must_equal 3
+        @hotel.reservations.map { |res| res.room }.uniq.length.must_equal 3
+      end
+
+      it 'creates reservations with the same date ranges and block_ids' do
+        @hotel.create_block(3, @date_range)
+        @hotel.reservations.map { |res| res.date_range }.uniq.length.must_equal 1
+        @hotel.reservations.map { |res| res.block_id }.uniq.length.must_equal 1
+      end
+
+      it 'throws an error if there are not enough rooms to create the block' do
+        16.times do
+          @hotel.reserve_room(@date_range)
+        end
+
+        proc { @hotel.create_block(5, @date_range) }.must_raise StandardError
+      end
+    end
+
+    describe 'find_available_block_rooms method' do
+      
+
+      it 'returns an empty array if there are no available rooms in the block' do
+
       end
     end
   end
