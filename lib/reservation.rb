@@ -11,6 +11,7 @@ module Hotel
       @date_range = input[:date_range]
       @room = input[:room]
       @block_id = input[:block_id]
+      @block_status = input[:block_status]
     end
 
     def cost

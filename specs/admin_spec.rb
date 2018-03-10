@@ -51,10 +51,9 @@ describe 'Admin class' do
       @reservation.room.must_be_instance_of Hotel::Room
     end
 
-    it 'associates the reservation with a room' do
+    it 'assigns a room to the reservation' do
       assigned_room = @reservation.room
       assigned_room.must_be_instance_of Hotel::Room
-      assigned_room.reservations.must_include @reservation
     end
 
     it 'adds the reservation to the hotels list of reservations' do
@@ -154,4 +153,5 @@ describe 'Admin class' do
       @hotel.find_available_rooms(date_range).must_be_empty
     end
   end
+
 end

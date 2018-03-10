@@ -9,7 +9,6 @@ module Hotel
     def initialize
       @rooms = load_rooms
       @reservations = []
-      @block_reservations = []
     end
 
     def load_rooms
@@ -34,13 +33,13 @@ module Hotel
 
       new_reservation = Reservation.new(reservation_data)
       @reservations << new_reservation
-      new_reservation.room.add_reservation(new_reservation)
+      # new_reservation.room.add_reservation(new_reservation)
 
       return new_reservation
 
     end
 
-    def create_block(num_rooms, date_range)
+    def create_block(num_rooms, date_range, block_id)
       if find_available_rooms(date_range).empty?
         raise StandardError.new("There are no available rooms for that date range.")
       end
@@ -49,23 +48,19 @@ module Hotel
         reservation_data = {
           id: next_reservation_id,
           date_range: date_range,
-          room: find_available_rooms(date_range).sample
+          room: find_available_rooms(date_range).sample,
+          block_id: block_id
         }
-        block_id = 1 #TODO: fix later
-        new_block_reservation = BlockReservation.new(reservation_data, block_id)
-        @block_reservations << new_block_reservation
-        new_block_reservation.room.add_reservation(new_block_reservation)
+        new_block_reservation = Reservation.new(reservation_data)
+        @reservations << new_block_reservation
+        #new_block_reservation.room.add_reservation(new_block_reservation)
       end
     end
 
     def find_available_block_rooms(block_id)
-      block_rooms = @block_reservations.select do |room|
-        block_reservations.id == block_id && block
+      available_block_rooms = @reservations.select do |res|
+        res.block_id == block_id && res.block_status == :blocked
       end
-
-      block_rooms.select
-
-
     end
 
     def next_reservation_id
@@ -86,13 +81,24 @@ module Hotel
       return reservations_by_date
     end
 
+    # def find_available_rooms(date_range)
+    #   available_rooms = @rooms.select do |room|
+    #     room.is_available?(date_range)
+    #   end
+    #
+    #   return available_rooms
+    # end
+
     def find_available_rooms(date_range)
-      available_rooms = @rooms.select do |room|
-        room.is_available?(date_range)
+      available_rooms = []
+
+      conflicts = @reservations.select do |reservation|
+        reservation.overlap?(date_range)
       end
 
-      return available_rooms
-    end
+      unavailable_rooms = conflicts.map { |res| res.room }
 
+      available_rooms = @rooms - unavailable_rooms
+    end
   end
 end
