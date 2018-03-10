@@ -224,10 +224,32 @@ describe 'Admin class' do
     end
 
     describe 'find_available_block_rooms method' do
-      
+      before do
+        @hotel = Hotel::Admin.new
+        @date_range = Hotel::DateRange.new("May 6, 1982", "May 10, 1982")
+      end
+
+      it 'returns an array of block reservations' do
+        @hotel.create_block(3, @date_range)
+        @hotel.find_available_block_rooms(1).must_be_kind_of Array
+        @hotel.find_available_block_rooms(1).each do |reservation|
+          reservation.must_be_instance_of Hotel::Reservation
+          reservation.block_id.wont_be_nil
+          reservation.block_status.wont_be_nil
+        end
+      end
+
+      it 'finds the number of available rooms in a block given a block id' do
+        @hotel.create_block(3, @date_range)
+        @hotel.find_available_block_rooms(1).length.must_equal 3
+        @hotel.reservations[0].change_status
+        @hotel.find_available_block_rooms(1).length.must_equal 2
+      end
 
       it 'returns an empty array if there are no available rooms in the block' do
-
+        @hotel.create_block(1, @date_range)
+        @hotel.reservations[0].change_status
+        @hotel.find_available_block_rooms(1).must_equal []
       end
     end
   end

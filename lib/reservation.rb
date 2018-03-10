@@ -25,5 +25,15 @@ module Hotel
     def overlap?(date_range)
       return @date_range.overlap?(date_range)
     end
+
+    def change_status
+      if @block_status == :blocked
+        @block_status = :reserved
+      else
+       @block_status = :blocked
+      end
+
+      return @block_status
+    end
   end
 end
