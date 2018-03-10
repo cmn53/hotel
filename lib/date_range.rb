@@ -8,7 +8,6 @@ module Hotel
     def initialize(start_date, end_date)
       @start_date = Date.parse(start_date)
       @end_date = Date.parse(end_date)
-      @range = range
 
       [@start_date, @end_date].each do |date|
         if date.class != Date
@@ -23,6 +22,10 @@ module Hotel
 
     def range
       return (@start_date...@end_date).to_a
+    end
+
+    def overlap?(other)
+      return !(other.range & self.range).empty?
     end
 
   end

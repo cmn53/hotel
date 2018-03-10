@@ -10,6 +10,7 @@ module Hotel
     def initialize
       @rooms = load_rooms
       @reservations = []
+      @block_reservations = []
     end
 
     def load_rooms
@@ -40,6 +41,34 @@ module Hotel
 
     end
 
+    def create_block(num_rooms, date_range)
+      if find_available_rooms(date_range).empty?
+        raise StandardError.new("There are no available rooms for that date range.")
+      end
+
+      num_rooms.times do
+        reservation_data = {
+          id: next_reservation_id,
+          date_range: date_range,
+          room: find_available_rooms(date_range).sample
+        }
+        block_id = 1 #TODO: fix later
+        new_block_reservation = BlockReservation.new(reservation_data, block_id)
+        @block_reservations << new_block_reservation
+        new_block_reservation.room.add_reservation(new_block_reservation)
+      end
+    end
+
+    def find_available_block_rooms(block_id)
+      block_rooms = @block_reservations.select do |room|
+        block_reservations.id == block_id && block
+      end
+
+      block_rooms.select
+
+
+    end
+
     def next_reservation_id
       if @reservations.empty?
         reservation_id =  1
@@ -52,7 +81,7 @@ module Hotel
 
     def find_reservations(date)
       reservations_by_date = @reservations.select do |reservation|
-        reservation.date_range.include?(date)
+        reservation.date_range.range.include?(date)
       end
 
       return reservations_by_date

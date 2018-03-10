@@ -17,5 +17,9 @@ module Hotel
 
       return projected_cost
     end
+
+    def overlap?(date_range)
+      return @date_range.overlap?(date_range)
+    end
   end
 end

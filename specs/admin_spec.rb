@@ -29,7 +29,7 @@ describe 'Admin class' do
   describe 'reserve_room method' do
     before do
       @hotel = Hotel::Admin.new
-      @date_range = Hotel::DateRange.new("Dec 31, 1999", "Jan 2, 2000").range
+      @date_range = Hotel::DateRange.new("Dec 31, 1999", "Jan 2, 2000")
       @reservation = @hotel.reserve_room(@date_range)
     end
 
@@ -44,8 +44,8 @@ describe 'Admin class' do
     it 'accurately loads reservation data' do
       @reservation.id.must_be_kind_of Integer
       @reservation.id.must_equal 1
-      @reservation.date_range.must_be_kind_of Array
-      @reservation.date_range.each do |date|
+      @reservation.date_range.must_be_kind_of Hotel::DateRange
+      @reservation.date_range.range.each do |date|
         date.must_be_kind_of Date
       end
       @reservation.room.must_be_instance_of Hotel::Room
@@ -78,9 +78,9 @@ describe 'Admin class' do
 
     it 'creates a unique reservation id' do
       hotel = Hotel::Admin.new
-      range_1 = Hotel::DateRange.new("May 6, 1982", "May 10, 1982").range
-      range_2 = Hotel::DateRange.new("April 30, 1982", "May 1, 1982").range
-      range_3 = Hotel::DateRange.new("May 5, 1982", "May 8, 1982").range
+      range_1 = Hotel::DateRange.new("May 6, 1982", "May 10, 1982")
+      range_2 = Hotel::DateRange.new("April 30, 1982", "May 1, 1982")
+      range_3 = Hotel::DateRange.new("May 5, 1982", "May 8, 1982")
       hotel.reserve_room(range_1)
       hotel.reserve_room(range_2)
       hotel.reserve_room(range_3)
@@ -93,9 +93,9 @@ describe 'Admin class' do
   describe 'find_reservations method' do
     before do
       @hotel = Hotel::Admin.new
-      range_1 = Hotel::DateRange.new("May 6, 1982", "May 10, 1982").range
-      range_2 = Hotel::DateRange.new("April 30, 1982", "May 1, 1982").range
-      range_3 = Hotel::DateRange.new("May 5, 1982", "May 8, 1982").range
+      range_1 = Hotel::DateRange.new("May 6, 1982", "May 10, 1982")
+      range_2 = Hotel::DateRange.new("April 30, 1982", "May 1, 1982")
+      range_3 = Hotel::DateRange.new("May 5, 1982", "May 8, 1982")
       @reservation_1 = @hotel.reserve_room(range_1)
       @reservation_2 = @hotel.reserve_room(range_2)
       @reservation_3 = @hotel.reserve_room(range_3)
@@ -125,9 +125,9 @@ describe 'Admin class' do
   describe 'find_available_rooms method' do
     before do
       @hotel = Hotel::Admin.new
-      date_range_1 = Hotel::DateRange.new("May 6, 1982", "May 10, 1982").range
-      date_range_2 = Hotel::DateRange.new("May 5, 1982", "May 8, 1982").range
-      @date_range_3 = Hotel::DateRange.new("May 6, 1982", "May 8, 1982").range
+      date_range_1 = Hotel::DateRange.new("May 6, 1982", "May 10, 1982")
+      date_range_2 = Hotel::DateRange.new("May 5, 1982", "May 8, 1982")
+      @date_range_3 = Hotel::DateRange.new("May 6, 1982", "May 8, 1982")
       @hotel.reserve_room(date_range_1)
       @hotel.reserve_room(date_range_2)
     end
@@ -146,7 +146,7 @@ describe 'Admin class' do
     end
 
     it 'returns an empty array if there are no available rooms' do
-      date_range = Hotel::DateRange.new("March 17, 2018", "March 18, 2018").range
+      date_range = Hotel::DateRange.new("March 17, 2018", "March 18, 2018")
       20.times do
         @hotel.reserve_room(date_range)
       end
