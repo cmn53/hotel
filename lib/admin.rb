@@ -62,10 +62,12 @@ module Hotel
     end
 
     def next_block_id
-      if @reservations.select { |res| res.block_id != nil }.empty?
+      block_reservations = @reservations.select { |res| res.block_id != nil }
+
+      if block_reservations.empty?
         return 1
       else
-        max_block_id = @reservations.map { |res| res.block_id }.max
+        max_block_id = block_reservations.map { |res| res.block_id }.max
         return max_block_id + 1
       end
     end

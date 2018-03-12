@@ -134,7 +134,7 @@ describe 'Admin class' do
         @hotel.create_block(5, @date_range)
       end
       @hotel.create_block(4, @date_range)
-    
+
       proc { @hotel.reserve_room(@date_range) }.must_raise StandardError
     end
   end
