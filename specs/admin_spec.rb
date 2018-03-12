@@ -129,14 +129,14 @@ describe 'Admin class' do
       proc { @hotel.reserve_room(@date_range) }.must_raise StandardError
     end
 
-    # it 'throws an error if all rooms have been blocked' do
-    #   3.times do
-    #     @hotel.create_block(5, @date_range)
-    #   end
-    #   @hotel.create_block(4, @date_range)
-    #
-    #   proc { @hotel.reserve_room(@date_range) }.must_raise StandardError
-    # end
+    it 'throws an error if all rooms have been blocked' do
+      3.times do
+        @hotel.create_block(5, @date_range)
+      end
+      @hotel.create_block(4, @date_range)
+    
+      proc { @hotel.reserve_room(@date_range) }.must_raise StandardError
+    end
   end
 
   describe 'next_reservation_id helper method' do

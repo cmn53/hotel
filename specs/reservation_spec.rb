@@ -63,4 +63,38 @@ describe 'Reservation class' do
 
   # Reservation#overlap? method not tested because it only calls the DateRange#overlap method
   # Tests for DateRange#overlap? included in date_range_spec file
+
+  describe 'change_status method' do
+    before do
+      @hotel = Hotel::Admin.new
+      @date_range = Hotel::DateRange.new('2018-03-09', '2018-03-12')
+      @hotel.create_block(1, @date_range)
+    end
+
+    it 'changes a block status to reserved if initially blocked' do
+      @hotel.reservations.first.block_status.must_equal :blocked
+      @hotel.reservations.first.change_status
+      @hotel.reservations.first.block_status.must_equal :reserved
+    end
+
+    it 'changes a block status to blocked if initially reserved' do
+      @hotel.reservations.first.change_status
+      @hotel.reservations.first.block_status.must_equal :reserved
+      @hotel.reservations.first.change_status
+      @hotel.reservations.first.block_status.must_equal :blocked
+    end
+
+    it 'does not change the block status of a reservation that is not part of a block' do
+      room = Hotel::Room.new(1)
+      reservation_data = {
+        id: 100,
+        date_range: @date_range,
+        room: room,
+      }
+      reservation = Hotel::Reservation.new(reservation_data)
+      reservation.block_status.must_be_nil
+      reservation.change_status
+      reservation.block_status.must_be_nil
+    end
+  end
 end

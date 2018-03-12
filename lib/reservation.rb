@@ -29,7 +29,7 @@ module Hotel
     def change_status
       if @block_status == :blocked
         @block_status = :reserved
-      else
+      elsif @block_status == :reserved
        @block_status = :blocked
       end
     end

@@ -1,7 +1,7 @@
 module Hotel
   class Room
 
-    attr_reader :number, :reservations
+    attr_reader :number
 
     def initialize(num)
 
