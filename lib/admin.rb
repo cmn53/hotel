@@ -72,7 +72,7 @@ module Hotel
 
     def create_block(num_rooms, date_range)
       if num_rooms > 5
-        raise ArgumentError.new("A block can contain a maximum of 5 rooms.")
+        raise ArgumentError.new("A block can include a maximum of 5 rooms.")
       end
 
       if find_available_rooms(date_range).length < num_rooms
@@ -101,6 +101,17 @@ module Hotel
 
       return available_block_rooms
     end
+
+    def reserve_block_room(block_id)
+      available_rooms = find_available_block_rooms(block_id)
+
+      if available_rooms.empty?
+        raise StandardError.new("There are no available rooms in Block #{block_id}.")
+      end
+
+      available_rooms.first.change_status
+    end
+
 
   end
 end

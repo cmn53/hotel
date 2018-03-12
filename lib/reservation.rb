@@ -32,8 +32,6 @@ module Hotel
       else
        @block_status = :blocked
       end
-
-      return @block_status
     end
   end
 end

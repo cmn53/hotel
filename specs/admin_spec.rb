@@ -252,5 +252,31 @@ describe 'Admin class' do
         @hotel.find_available_block_rooms(1).must_equal []
       end
     end
+
+    describe 'reserve_block_room method' do
+      before do
+        @hotel = Hotel::Admin.new
+        @date_range = Hotel::DateRange.new("May 6, 1982", "May 10, 1982")
+        @hotel.create_block(2, @date_range)
+      end
+
+      it 'throws an error if there are no availabe rooms in the requested block' do
+        @hotel.reservations[0].change_status
+        @hotel.reservations[1].change_status
+        proc { @hotel.reserve_block_room(1) }.must_raise StandardError
+      end
+
+      it 'changes the block_status of the first available room from blocked to reserved' do
+        @hotel.reservations[0].block_status.must_equal :blocked
+        @hotel.reserve_block_room(1)
+        @hotel.reservations[0].block_status.must_equal :reserved
+      end
+
+      it 'changes the number of available rooms in the block' do
+        @hotel.find_available_block_rooms(1).length.must_equal 2
+        @hotel.reserve_block_room(1)
+        @hotel.find_available_block_rooms(1).length.must_equal 1
+      end
+    end
   end
 end
